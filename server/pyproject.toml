@@ -1,0 +1,19 @@
+[project]
+name = "server"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.14"
+dependencies = [
+    "google-adk>=2.14.1",
+    "google-auth>=2.62.2",
+    "google-cloud>=0.34.0",
+    "google-cloud-bigquery>=3.47.0",
+]
+
+[project.scripts]
+server = "server:main"
+
+[build-system]
+requires = ["uv_build>=0.13.8,<0.14.0"]
+build-backend = "uv_build"
