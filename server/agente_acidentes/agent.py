@@ -31,6 +31,6 @@ prompt = """
 root_agent = Agent(
     name="root_agent",
     instruction=prompt,
-    model="gemini-3.8-flash",
+    model="gemini-3.5-flash-lite",
     tools=[bq_tools]
 )
