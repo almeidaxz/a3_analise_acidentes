@@ -1,30 +1,94 @@
-# Vida nas Vias — React Dark Analytics v2
+# README — Executando o front end localmente
 
-SPA React/TypeScript com seis abas e indicadores reais derivados do CSV `public/datatran2026.csv`, exportado do Power BI Web. Não requer Power BI Service para executar os dashboards.
+Aplicação de análise de acidentes em rodovias federais brasileiras, com **dashboards interativos** e **agente conversacional** para consultas em linguagem natural. O frontend utiliza React/Vite; o agente utiliza Google ADK, Gemini e Google BigQuery.
 
-## Executar
+## Estrutura do projeto
 
-1. `npm install`
-2. Copie `.env.example` para `.env`.
-3. Inicie o Google ADK localmente na porta 8000 (`adk api_server`), com o aplicativo `agente_acidentes` disponível. Ajuste as permissões de origem conforme sua versão do ADK, se necessário.
-4. `npm run dev` e abra `http://localhost:5173`.
+```text
+.
+├── uc1_analise_dados_big_data/     # Entregáveis da UC de Análise de Dados e Big Data
+├── uc2_inteligencia_artificial/    # Entregáveis da UC de Inteligência Artificial
+├── front/                          # Frontend React
+└── server/                         # Servidor Google ADK
+    └── agente_acidentes/
+        ├── __init__.py
+        └── agent.py
+```
 
-O Vite encaminha `/adk` para `http://127.0.0.1:8000`. Para produção, configure um backend/proxy seguro; o proxy Vite não existe após `npm run build`.
+> **Entregáveis acadêmicos:** os materiais de cada unidade curricular estão separados nas pastas `analise_dados_big_data` e `inteligencia_artificial`.
+>
+> O servidor ADK deve ser iniciado **na pasta pai de `agente_acidentes`**.
 
-## Indicadores
+## Pré-requisitos
 
-- `Qtd IDs`: `DISTINCTCOUNT(id)`.
-- `Acidentes com Mortes`: `COUNTROWS` com `mortos > 0`.
-- `Taxa de Letalidade`: acidentes com mortes / total de registros.
-- `Share UF`: `DISTINCTCOUNT(id)` no contexto atual / `DISTINCTCOUNT(id)` removendo apenas o filtro global de UF.
-- `Qtd Envolvidos Selecionados`: `SUM(pessoas|mortos|feridos_leves|feridos_graves)`.
-- `Nº Mês`: mês extraído de `data_inversa`.
+- Node.js e npm para o frontend.
+- Python e `pip` (ou `uv`) para o agente.
+- Credenciais e permissões válidas para os serviços Google utilizados pelo agente (Gemini e BigQuery), configuradas conforme o backend.
 
-## Limitações e validação
+## Executar frontend e servidor simultaneamente
 
-- O CSV é de janeiro a agosto de 2026: não comparar como ano completo.
-- Os gráficos são uma primeira reprodução analítica das seis páginas, não uma cópia pixel a pixel de todos os 71 visuais do PBIX.
-- A aba Geografia contém rankings reais; mapa por coordenadas ainda não foi implementado.
-- A navegação e os filtros globais são interativos. Os filtros e interações específicos do Power BI devem ser validados visual a visual.
-- O contexto de filtros enviado ao agente é informativo: o ADK precisa interpretar o contexto e consultar uma fonte compatível para responder com os mesmos recortes.
-- O CSV em `public` é baixado pelo navegador: não hospede dados confidenciais nessa pasta.
+Use **dois terminais abertos ao mesmo tempo**: um para o servidor e outro para o frontend.
+
+### Terminal 1 — Servidor do agente (porta 8000)
+
+No diretório pai de `agente_acidentes`:
+
+```powershell
+cd backend
+py -m venv .venv
+.\.venv\Scripts\Activate.ps1
+pip install -r requirementes.txt
+adk api_server --host 127.0.0.1 --port 8000 .
+```
+
+No Linux/macOS, crie e ative o ambiente com `python3 -m venv .venv` e `source .venv/bin/activate`.
+
+Confirme que o agente está disponível em:
+
+- API: http://127.0.0.1:8000/docs
+- Agentes disponíveis: http://127.0.0.1:8000/list-apps
+
+A lista deve incluir `agente_acidentes`.
+
+### Terminal 2 — Frontend (porta 5173)
+
+Na pasta da aplicação React:
+
+```powershell
+cd front
+npm install
+Copy-Item .env.example .env
+npm run dev
+```
+
+No Linux/macOS, use `cp .env.example .env` no lugar de `Copy-Item`.
+
+Confira as variáveis do `.env`:
+
+```dotenv
+VITE_ADK_API_URL=/adk
+VITE_ADK_APP_NAME=agente_acidentes
+```
+
+Abra **http://localhost:5173** no navegador.
+
+O Vite encaminha as requisições a `/adk` para `http://127.0.0.1:8000`, conforme a configuração de proxy em `vite.config.ts`. **Mantenha ambos os terminais em execução** para utilizar os dashboards e o agente conversacional juntos.
+
+## Como encerrar
+
+Pressione `Ctrl+C` em cada terminal para interromper o frontend e o servidor.
+
+## Problemas comuns
+
+| Problema                          | Verificação                                                                                  |
+| --------------------------------- | -------------------------------------------------------------------------------------------- |
+| O chat não responde               | Confira se o ADK está ativo na porta 8000 e se `agente_acidentes` aparece em `/list-apps`.   |
+| Erro `404` na API                 | Inicie o ADK a partir da pasta **pai** de `agente_acidentes` e confirme `VITE_ADK_APP_NAME`. |
+| Erro de conexão (`ECONNREFUSED`)  | Verifique a porta 8000 e o proxy em `vite.config.ts`.                                        |
+| Erro de autenticação ou consulta  | Confira as credenciais, permissões e configurações do Gemini/BigQuery no backend.            |
+| Alterações no `.env` não refletem | Reinicie o processo `npm run dev`.                                                           |
+
+## Entregáveis por unidade curricular
+
+- **`analise_dados_big_data/`** — documentação, análises, dashboards e demais materiais da UC com foco em análise de dados.
+- **`inteligencia_artificial/`** — documentação, demonstrações e demais materiais da UC com foco no agente conversacional e sua integração.

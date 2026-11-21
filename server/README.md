@@ -12,6 +12,9 @@ Antes de começar, tenha instalado:
 - Git (opcional).
 - `pip` ou `uv` para gerenciamento das dependências.
 - Uma chave de API do Gemini.
+- Projeto GCP com BigQuery ativo e base de dados importada num dataset/tabela dele.
+
+> A linha 26 do arquivo `agente_acidentes/agent.py` para o endereço do seu dataset/tabela, no formato `id_projeto.id_dataset.id_tabela`.
 
 Verifique se o Python está instalado:
 
@@ -47,15 +50,16 @@ A disponibilidade dos modelos, os limites gratuitos e eventuais cobranças depen
 
 **Importante:** nunca compartilhe sua chave de API nem a inclua em commits do GitHub.
 
-## 3. Configurar a chave de API
+## 3. Configurar env vars
 
-Na pasta do agente, onde está o arquivo `agent.py`, crie um arquivo chamado `.env`.
+Renomeie o arquivo `.env.example` para `.env` e preencha com as suas variáveis gcp
 
 Adicione:
 
 ```dotenv
-GOOGLE_API_KEY=SUA_CHAVE_GEMINI
-GOOGLE_GENAI_USE_VERTEXAI=FALSE
+GOOGLE_API_KEY=
+GOOGLE_CLOUD_PROJECT=
+GOOGLE_GENAI_USE_VERTEXAI=FALSE # mantenha False
 ```
 
 Substitua `SUA_CHAVE_GEMINI` pela chave gerada no Google AI Studio.
@@ -132,12 +136,6 @@ Com o ambiente virtual ativado, instale as dependências do projeto:
 pip install -r requirements.txt
 ```
 
-Caso o projeto não tenha um `requirements.txt`, instale pelo menos o Google ADK:
-
-```bash
-pip install google-adk
-```
-
 Se o agente importar outras bibliotecas, elas também deverão ser instaladas.
 
 ### Opção B — Com uv
@@ -146,12 +144,6 @@ Se o projeto utilizar `pyproject.toml`:
 
 ```bash
 uv sync
-```
-
-Se não houver um arquivo de dependências, você pode instalar o ADK diretamente:
-
-```bash
-uv pip install google-adk
 ```
 
 Nesse último caso, crie e ative o ambiente virtual antes da instalação, caso ainda não exista.
@@ -167,10 +159,10 @@ projeto/
 │
 ├── agente_acidentes/
 │   ├── __init__.py
-│   ├── agent.py
-│   └── .env
+│   └── agent.py
 │
 ├── requirements.txt
+├── .env
 └── .venv/
 ```
 
@@ -180,7 +172,7 @@ O arquivo `agent.py` deve expor um agente chamado `root_agent`, conforme a conve
 
 ## 7. Executar o agente na porta 8000
 
-Abra o terminal na pasta `projeto/`, que contém o diretório `agente_acidentes/`.
+Abra o terminal na pasta que contém o diretório `agente_acidentes/`.
 
 ### Com pip e venv
 
