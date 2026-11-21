@@ -98,3 +98,18 @@ Pressione `Ctrl+C` em cada terminal para interromper o frontend e o servidor.
 
 - **`analise_dados_big_data/`** — documentação, análises, dashboards e demais materiais da UC com foco na análise de dados.
 - **`inteligencia_artificial/`** — documentação, demonstrações e demais materiais da UC com foco no agente conversacional e sua integração.
+
+> [!IMPORTANT]
+> **Aviso sobre a disponibilidade da API de Inteligência Artificial**
+>
+> Durante a utilização do agente conversacional, podem ocorrer erros HTTP **429, 503 ou 504**, geralmente associados a limites de requisições, sobrecarga ou indisponibilidade temporária da API do Gemini.
+>
+> Esses erros não indicam necessariamente uma falha na nossa aplicação, podendo estar relacionados à capacidade ou às restrições do serviço de IA, principalmente por se tratar do tier gratuito, quando não há garantia de SLA dos modelos.
+>
+> Caso ocorram, recomenda-se:
+>
+> - **Tentar novamente após alguns minutos**, quando a API poderá estar menos congestionada.
+> - **Alterar o modelo Gemini utilizado** para outra versão disponível e compatível, respeitando os limites de utilização de cada modelo.
+>
+> A disponibilidade e o desempenho da API dependem da infraestrutura e dos limites estabelecidos pelo provedor do modelo.
+> A primeira requisição ao modelo pode apresentar uma latência consideravelmente alta (~5 min). Não encerre o processo caso aconteça. Aguarde o fim da requisição. As requisições subsequentes já terão latência nominal normal.
